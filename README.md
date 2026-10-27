@@ -4,7 +4,7 @@ Polls velocity demand parameters from VibrationVIEW and writes them to a PLC ove
 
 ## What it does
 
-- Connects to VibrationVIEW via COM API
+- Connects to VibrationVIEW via COM/Automation API
 - Reads velocity fields using `ReportFields`
 - Converts values to mm/s (from in/s, ft/s, m/s, or mm/s)
 - Writes scaled integers (x10, 1 decimal place) to two Modbus holding registers
@@ -90,4 +90,4 @@ POLL_INTERVAL_S = 1.0
 python -u vv_to_plc.py
 ```
 
-VibrationVIEW must be running. Press Ctrl+C to stop.
+Press Ctrl+C to stop.
