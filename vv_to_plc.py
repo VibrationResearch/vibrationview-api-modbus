@@ -63,7 +63,7 @@ def parse_and_convert(raw):
     return to_mm_per_sec(value, unit)
 
 
-def read_velocities(vv):
+def read_report_fields(vv):
     """Read velocity fields from VibrationVIEW, return (rms_mm, peak_mm)."""
     fields = vv.ReportFields(
         "TestType,DemandVelocityRMS,DemandVelocityPeak,"
@@ -162,7 +162,7 @@ def main():
                     continue
 
             try:
-                rms_mm, peak_mm = read_velocities(vv)
+                rms_mm, peak_mm = read_report_fields(vv)
                 scaled_rms = max(
                     0, min(int(rms_mm * SCALE_FACTOR), 32767))
                 scaled_peak = max(
