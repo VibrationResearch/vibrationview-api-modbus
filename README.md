@@ -59,8 +59,7 @@ The VibrationVIEW report field used for peak/RMS depends on the active test type
 ```
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install pymodbus
-pip install -e D:\Data\vibrationview-api
+pip install -r requirements.txt
 ```
 
 ### LOGO! PLC (Soft Comfort V9.0)
