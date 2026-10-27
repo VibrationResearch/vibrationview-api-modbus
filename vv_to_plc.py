@@ -25,16 +25,9 @@ PLC_IP = "192.168.3.180"
 PLC_PORT = 502
 REG_RMS = 0                 # Holding register for DemandVelocityRMS  (VW0)
 REG_PEAK = 1                # Holding register for DemandVelocityPeak (VW2)
-SCALE_FACTOR = 10            # 239.4 mm/s -> 2394  (1 decimal place)
+SCALE_FACTOR = 10           # 239.4 mm/s -> 2394  (1 decimal place)
 POLL_INTERVAL_S = 1.0       # Seconds between polls
 RECONNECT_DELAY_S = 5.0     # Seconds to wait before reconnecting
-
-
-def connect_plc():
-    plc = ModbusTcpClient(PLC_IP, port=PLC_PORT)
-    if not plc.connect():
-        return None
-    return plc
 
 
 def connect_vv():
@@ -69,20 +62,10 @@ def parse_and_convert(raw):
 
 
 def main():
-    plc = None
     vv = None
 
     try:
         while True:
-            # Ensure PLC connection
-            if plc is None:
-                print(f"Connecting to LOGO! PLC at {PLC_IP}:{PLC_PORT} ...")
-                plc = connect_plc()
-                if plc is None:
-                    print(f"PLC not reachable. Retrying in {RECONNECT_DELAY_S}s ...")
-                    time.sleep(RECONNECT_DELAY_S)
-                    continue
-                print("PLC connected.")
 
             # Ensure VibrationVIEW connection
             if vv is None:
@@ -124,7 +107,10 @@ def main():
 
                 scaled_rms = max(0, min(int(rms_mm * SCALE_FACTOR), 32767))
                 scaled_peak = max(0, min(int(peak_mm * SCALE_FACTOR), 32767))
-                result = plc.write_registers(REG_RMS, [scaled_rms, scaled_peak])
+                # Reconnect each cycle — the LOGO! drops idle TCP connections
+                # after ~10 s and there is no user-configurable timeout.
+                with ModbusTcpClient(PLC_IP, port=PLC_PORT) as conn:
+                    result = conn.write_registers(REG_RMS, [scaled_rms, scaled_peak])
 
                 if result.isError():
                     log(f"[ERROR] Modbus write error: {result}")
@@ -140,9 +126,7 @@ def main():
                     vv.close()
                     vv = None
                 elif "Modbus" in error_str or isinstance(e, ConnectionError):
-                    print(f"PLC connection lost: {e}")
-                    plc.close()
-                    plc = None
+                    print(f"PLC connection error: {e}")
                 else:
                     print(f"Error: {e}")
                     vv.close()
@@ -157,8 +141,6 @@ def main():
     finally:
         if vv is not None:
             vv.close()
-        if plc is not None:
-            plc.close()
         print("Connections closed.")
 
 
