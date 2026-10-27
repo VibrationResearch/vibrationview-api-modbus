@@ -33,6 +33,14 @@ The VibrationVIEW report field used for peak/RMS depends on the active test type
 | Transient    | DemandVelocity           | Peak              |
 | FDR (Replay) | 0                        | 0                 |
 
+### Requirements
+
+- Windows operating system (Windows 10 or Windows 11)
+- VibrationVIEW software installed with automation option (VR9604), or running in Simulation mode
+- Python 3.7 or higher
+- pymodbus
+- vibrationview-api
+
 ## Setup
 
 ### Python environment
