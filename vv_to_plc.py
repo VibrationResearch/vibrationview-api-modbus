@@ -36,6 +36,7 @@ def connect_vv():
     try:
         vv = VibrationVIEW()
         print(f"VibrationVIEW version: {vv.GetSoftwareVersion()}")
+        vv.Restore()
         return vv
     except (OSError, RuntimeError) as e:
         print(f"VibrationVIEW connection failed: {e}")
