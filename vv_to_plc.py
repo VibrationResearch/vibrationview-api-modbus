@@ -3,8 +3,9 @@ Poll DemandVelocityRMS and DemandVelocityPeak from VibrationVIEW and write
 them to a Siemens LOGO! PLC via Modbus TCP.
 
 Values are scaled to integers (x10) and written to holding registers:
-  Register 0 (VW0) = DemandVelocityRMS   in mm/s
-  Register 1 (VW2) = DemandVelocityPeak  in mm/s
+  Register 0 (VW0) = Status bits
+  Register 1 (VW2) = DemandVelocityRMS   in mm/s
+  Register 2 (VW4) = DemandVelocityPeak  in mm/s
 """
 
 import time
@@ -45,11 +46,12 @@ def connect_vv():
 
 def to_mm_per_sec(value, unit):
     """Convert a velocity value to mm/s based on its unit string."""
-    if unit == "in/s":
+    lower = unit.lower()
+    if lower == "in/s":
         return value * 25.4
-    if unit == "ft/s":
+    if lower == "ft/s":
         return value * 304.8
-    if unit == "m/s":
+    if lower == "m/s":
         return value * 1000.0
     return value
 
