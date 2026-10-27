@@ -12,13 +12,24 @@ Polls velocity demand parameters from VibrationVIEW and writes them to a PLC ove
 
 ## Modbus registers
 
-| Register | LOGO! address | Value                  |
-|----------|---------------|------------------------|
-| 0        | VW0           | Velocity RMS (mm/s x10)|
-| 1        | VW2           | Velocity Peak (mm/s x10)|
+| Register | LOGO! address | Value                       |
+|----------|---------------|-----------------------------|
+| 0        | VW0           | Status bits (see below)     |
+| 1        | VW2           | Velocity RMS (mm/s x10)     |
+| 2        | VW4           | Velocity Peak (mm/s x10)    |
 
-On the LOGO!, use **NAI** (Network Analog Input) blocks at VW0 and VW2 with
-1 decimal place to display the values.
+**Status bits** (packed in low byte VB1):
+
+| Bit | Flag            |
+|-----|-----------------|
+| 0   | Heartbeat       |
+| 1   | IsRunning       |
+| 2   | IsStarting      |
+| 3   | IsAborted       |
+| 4   | IsChangingLevel |
+
+On the LOGO!, use **NAI** (Network Analog Input) blocks at VW2 and VW4 with
+1 decimal place to display the velocity values.
 
 ## Test mode field mapping
 
@@ -54,6 +65,8 @@ pip install -e D:\Data\vibrationview-api
 
 ### LOGO! PLC (Soft Comfort V9.0)
 
+A sample project is included in `LogoSOFT/logosoft_vrcdemo.snp`.
+
 1. Open your project in Network Project view
 2. Device properties > Server connections > add a **Modbus/TCP** connection
 3. Download to the PLC
@@ -65,8 +78,9 @@ Edit the constants at the top of `vv_to_plc.py`:
 ```python
 PLC_IP = "192.168.3.180"
 PLC_PORT = 502
-REG_RMS = 0           # VW0
-REG_PEAK = 1          # VW2
+REG_STATUS = 0        # VW0
+REG_RMS = 1           # VW2
+REG_PEAK = 2          # VW4
 SCALE_FACTOR = 10     # 1 decimal place, max ~3276.7 mm/s
 POLL_INTERVAL_S = 1.0
 ```
